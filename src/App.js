@@ -51,8 +51,11 @@ function App() {
 
     setQuestions(updatedQs);
   }, []);
+  const [questionIndex, setQuestionIndex] = useState(0);
   return (
-    <QuestionContext.Provider value={questions}>
+    <QuestionContext.Provider
+      value={{ questions, setQuestions, questionIndex, setQuestionIndex }}
+    >
       <Container fluid className="app-container">
         <MainRoutes />
       </Container>

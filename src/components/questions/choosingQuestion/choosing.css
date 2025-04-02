@@ -10,7 +10,7 @@
   padding: 2px 8px;
   cursor: pointer;
   background-color: var(--white);
-  transition: all 0s ease-in-out;
+  transition: all 0s ease-in-out 0;
   opacity: 1;
   position: relative;
 }

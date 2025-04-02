@@ -7,9 +7,9 @@ import Cbutton from "../../common/button/Cbutton";
 import { QuestionContext } from "../../..";
 import "./questionLayout.css";
 function QuestionLayout() {
-  const questions = useContext(QuestionContext);
+  const { questions, questionIndex, setQuestionIndex } =
+    useContext(QuestionContext);
   const [data, setData] = useState([]);
-  const [questionIndex, setQuestionIndex] = useState(0);
   const [next, setNext] = useState(0);
   const onClickNext = useCallback(() => {
     setQuestionIndex(questionIndex + 1);

@@ -14,7 +14,7 @@ function Choosing({ answers = [], question, data, setData, questionIndex }) {
   useEffect(() => {
     setAnimationName("to-right");
   }, [questionIndex]);
-
+  console.log(data);
   return (
     <ul>
       {answers.map((ans, i) => {
