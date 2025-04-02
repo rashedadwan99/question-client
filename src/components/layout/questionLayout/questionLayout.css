@@ -2,3 +2,54 @@
   text-align: center;
   text-transform: capitalize;
 }
+
+.to-left {
+  animation: translateXAnimationLeft 1s ease-in-out infinite alternate;
+}
+
+.to-right {
+  animation: translateXAnimationRight 1s ease-in-out infinite alternate;
+}
+
+@keyframes translateXAnimationLeft {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes translateXAnimationRight {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--gray);
+  border-radius: 8px;
+  width: 100%;
+  min-height: 60px;
+  margin-bottom: 10px;
+  padding: 2px 8px;
+  cursor: pointer;
+  background-color: var(--white);
+  transition: all 0s ease-in-out 0;
+  opacity: 1;
+  position: relative;
+}
+
+.list-item.selected {
+  border: 3px solid var(--green);
+}

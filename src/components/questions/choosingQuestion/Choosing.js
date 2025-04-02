@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "./choosing.css";
 import Cimg from "../../common/img/Cimg";
 import CheckImg from "../../../assets/images/Check.gif";
@@ -16,10 +16,10 @@ function Choosing({ answers = [], question, data, setData, animationName }) {
       {answers.map((ans, i) => {
         return (
           <li
-            className={`multiple-answer ${animationName} ${
+            className={`list-item ${animationName} ${
               handleIsSelected(ans) ? " selected" : ""
             }`}
-            style={{ animationDelay: `0.2${i + 5}s` }}
+            style={{ animationDelay: `0.3${i}s` }}
             key={ans.id}
             onClick={() => handleChoosing(ans)}
           >

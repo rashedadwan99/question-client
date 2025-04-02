@@ -30,13 +30,22 @@ function QuestionLayout() {
     }, [1000]);
   }, [questionIndex]);
 
-  const choosingProps = {
-    answers: questions[questionIndex].answers,
-    question: questions[questionIndex],
-    animationName,
-    data,
-    setData,
-  };
+  const componentProps = !questions[questionIndex].questions
+    ? {
+        answers: questions[questionIndex].answers,
+        question: questions[questionIndex],
+        animationName,
+        data,
+        setData,
+      }
+    : {
+        answers: questions[questionIndex].answers,
+        questions: questions[questionIndex].questions,
+        data,
+        setData,
+        label: "hi",
+      };
+  console.log(componentProps);
   const QuestionComponent = questions[questionIndex].component;
   return (
     <Row className="justify-content-between align-items-start">
@@ -53,8 +62,10 @@ function QuestionLayout() {
           <h3 className="question-label mb-5">
             {questions[questionIndex].label}
           </h3>
-          <Stack className="mb-3 justify-content-center align-items-start">
-            {QuestionComponent && <QuestionComponent {...choosingProps} />}
+          <Stack
+            className={`mb-3 justify-content-center align-items-start ${animationName}`}
+          >
+            {QuestionComponent && <QuestionComponent {...componentProps} />}
           </Stack>
           <Stack direction="horizontal" className="justify-content-between">
             {questionIndex ? (

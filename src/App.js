@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { QuestionContext } from ".";
 import "./app.css";
 import Choosing from "./components/questions/choosingQuestion/Choosing";
+import Matching from "./components/questions/matchingQuestions/Matching";
 function App() {
   const [questions, setQuestions] = useState([
     {
@@ -26,28 +27,35 @@ function App() {
     },
     {
       id: 2,
-      label: "what is your major",
+      label: "matching",
+      questions: [
+        { content: "jordan", id: 1 },
+        { content: "palestine", id: 2 },
+      ],
       answers: [
         {
           id: 1,
-          content: "CS",
+          content: "a mansaf country",
         },
         {
           id: 2,
-          content: "CIS",
-        },
-        {
-          id: 3,
-          content: "BIT",
+          content: "an arabic country, forever",
         },
       ],
     },
   ]);
   useEffect(() => {
-    const updatedQs = questions.map((q) => ({
-      ...q,
-      component: q.answers ? Choosing : q.component, // Only update if `answers` exist
-    }));
+    const updatedQs = questions.map((q) => {
+      return !q.questions
+        ? {
+            ...q,
+            component: Choosing,
+          }
+        : {
+            ...q,
+            component: Matching,
+          };
+    });
 
     setQuestions(updatedQs);
   }, []);
