@@ -25,3 +25,33 @@
   right: 10px;
   height: 50px;
 }
+
+.multiple-answer.to-left {
+  animation: translateXAnimationLeft 1s ease-in-out infinite alternate;
+}
+
+.multiple-answer.to-right {
+  animation: translateXAnimationRight 1s ease-in-out infinite alternate;
+}
+
+@keyframes translateXAnimationLeft {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes translateXAnimationRight {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}

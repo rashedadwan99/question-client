@@ -11,19 +11,29 @@ function QuestionLayout() {
     useContext(QuestionContext);
   const [data, setData] = useState([]);
   const [next, setNext] = useState(0);
+  const [animationName, setAnimationName] = useState("");
+
   const onClickNext = useCallback(() => {
-    setQuestionIndex(questionIndex + 1);
     setNext(1);
+    setAnimationName("to-left");
+    setTimeout(() => {
+      setQuestionIndex(questionIndex + 1);
+      setAnimationName("");
+    }, [1000]);
   }, [questionIndex]);
   const onClickBack = useCallback(() => {
-    setQuestionIndex(questionIndex - 1);
     setNext(0);
+    setAnimationName("to-right");
+    setTimeout(() => {
+      setQuestionIndex(questionIndex - 1);
+      setAnimationName("");
+    }, [1000]);
   }, [questionIndex]);
 
   const choosingProps = {
     answers: questions[questionIndex].answers,
     question: questions[questionIndex],
-
+    animationName,
     data,
     setData,
   };
