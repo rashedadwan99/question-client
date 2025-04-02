@@ -43,21 +43,19 @@ function QuestionLayout() {
         questions: questions[questionIndex].questions,
         data,
         setData,
-        label: "hi",
       };
-  console.log(componentProps);
   const QuestionComponent = questions[questionIndex].component;
   return (
     <Row className="justify-content-between align-items-start">
-      <Col xs={12} sm={12} md={12} lg={6} className="my-3">
+      <Col xs={12} sm={12} md={12} lg={4} className="my-3">
         <Cimg
           src={Qimg}
           alt="woman"
-          style={{ objectFit: "cover", maxWidth: "80%" }}
+          style={{ objectFit: "cover", maxWidth: "100%" }}
         />
         <Stepper {...{ questions, questionIndex, next }} />
       </Col>
-      <Col xs={12} sm={12} md={12} lg={6}>
+      <Col xs={12} sm={12} md={12} lg={8}>
         <Row className="justify-content-center">
           <h3 className="question-label mb-5">
             {questions[questionIndex].label}
