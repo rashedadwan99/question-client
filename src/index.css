@@ -1,0 +1,14 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import url("./assets/css-helpers/variables.css");
+
+body {
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+ul {
+  padding: 0 !important;
+  list-style-type: none;
+  width: 100%;
+}

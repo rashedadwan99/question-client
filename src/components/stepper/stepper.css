@@ -1,0 +1,36 @@
+.stepper {
+
+  display: flex;
+  flex-direction: row;
+}
+
+.stepper .step {
+  height: 15px;
+  margin-right: 5px;
+  flex: 1;
+  border-radius: 8px;
+  display: inline-block;
+  background: linear-gradient(to left, var(--gray), var(--gray));
+  position: relative;
+  overflow: hidden;
+}
+
+.stepper .step.back {
+  transform: rotateY(-180deg);
+}
+
+.stepper .step::after {
+  display: block;
+  height: 100%;
+  border-radius: 8px;
+  content: "";
+  transition: width 0.5s linear 0s;
+  width: 0;
+}
+
+
+
+.stepper .step.active::after {
+  width: 100%;
+  background-color: var(--dark-red);
+}
