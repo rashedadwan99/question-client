@@ -1,76 +1,72 @@
 import React, { useState, useEffect } from "react";
 import "./matching.css";
 
-function Matching({ answers = [], questions = [], setData, data }) {
-  const [selectedQuestion, setSelectedQuestion] = useState(null);
-  const [matches, setMatches] = useState([]); // Stores matched pairs as [{ qId, ansId }]
+function Matching({ question, setData, data }) {
+  const [leftPair, setLeftPair] = useState(null);
+  const [leftPairs, setLeftPairs] = useState([]);
+  const [rightPairs, setRightPairs] = useState([]);
+
   useEffect(() => {
-    // Update data whenever matches change
-    if (matches.length) setData([...data, ...matches]); // Ensure matches are spread into data
-  }, [matches]);
+    setLeftPairs(question.matchingPairs.map((pair) => pair.left));
+    setRightPairs(question.matchingPairs.map((pair) => pair.right));
+  }, [question]);
 
-  const handleQuestionClick = (questionId) => {
-    setSelectedQuestion(questionId);
+  const matchingPairs =
+    data.find((entry) => entry.matchingPairs)?.matchingPairs || [];
+
+  const handleQuestionClick = (left) => {
+    setLeftPair(left);
   };
 
-  const handleAnswerClick = (answerId) => {
-    if (selectedQuestion !== null) {
-      setMatches((prevMatches) => {
-        let updatedMatches = [...prevMatches];
+  const handleAnswerClick = (right) => {
+    if (!leftPair) return;
 
-        // Check if the answer is already matched to another question
-        const existingMatchIndex = updatedMatches.findIndex(
-          (match) => match.ansId === answerId
-        );
+    const matchedPair = matchingPairs.find(
+      (pair) => pair.left === leftPair && pair.right === right
+    );
 
-        if (existingMatchIndex !== -1) {
-          updatedMatches.splice(existingMatchIndex, 1); // Remove old match
-        }
+    let updatedPairs;
 
-        // Check if the selected question is already matched
-        const questionMatchIndex = updatedMatches.findIndex(
-          (match) => match.qId === selectedQuestion
-        );
-
-        if (questionMatchIndex !== -1) {
-          updatedMatches.splice(questionMatchIndex, 1); // Unmatch previous answer
-        }
-
-        // If selecting the same answer, remove the match (toggle off)
-        const isAlreadyMatched = prevMatches.some(
-          (match) => match.qId === selectedQuestion && match.ansId === answerId
-        );
-
-        if (!isAlreadyMatched) {
-          updatedMatches.push({ qId: selectedQuestion, ansId: answerId });
-        }
-
-        setSelectedQuestion(null); // Reset selection
-        return updatedMatches;
-      });
+    if (matchedPair) {
+      // If already matched, remove the pair (toggle off)
+      updatedPairs = matchingPairs.filter(
+        (pair) => !(pair.left === leftPair && pair.right === right)
+      );
+    } else {
+      // If either left or right already matched with another, remove the old one
+      updatedPairs = matchingPairs
+        .filter((pair) => pair.left !== leftPair && pair.right !== right)
+        .concat({ left: leftPair, right });
     }
+
+    const filteredData = data.filter((d) => !d.matchingPairs);
+    setData([...filteredData, { matchingPairs: updatedPairs }]);
+    setLeftPair(null);
   };
 
+  const findMatchFor = (side, value) =>
+    matchingPairs.find((pair) => pair[side] === value);
+
+  console.log(matchingPairs);
   return (
     <div className="matching-container">
-      {/* Column 1 (Questions) */}
+      {/* Questions Column */}
       <ul className="column">
-        <h6>Column 1 (Questions)</h6>
-        {questions.map((q) => {
-          const matchedAnswer = data.find((match) => match.qId === q.id);
+        <h6>(Questions)</h6>
+        {leftPairs.map((left) => {
+          const matched = findMatchFor("left", left);
           return (
             <li
-              key={q.id}
+              key={left}
               className={`list-item question ${
-                selectedQuestion === q.id ? "selected" : ""
-              }`}
-              onClick={() => handleQuestionClick(q.id)}
+                leftPair === left ? "selected" : ""
+              } ${matched ? "matched" : ""}`}
+              onClick={() => handleQuestionClick(left)}
             >
-              {q.content}
-              {matchedAnswer && (
+              {left}
+              {matched && (
                 <span className="match-indicator">
-                  ✅ Matched with:{" "}
-                  {answers.find((a) => a.id === matchedAnswer.ansId)?.content}
+                  ✅ Matched with: {matched.right}
                 </span>
               )}
             </li>
@@ -80,22 +76,21 @@ function Matching({ answers = [], questions = [], setData, data }) {
 
       <div className="vertical-line" />
 
-      {/* Column 2 (Answers) */}
+      {/* Answers Column */}
       <ul className="column">
-        <h6>Column 2 (Answers)</h6>
-        {answers.map((a) => {
-          const matchedQuestion = data.find((match) => match.ansId === a.id);
+        <h6>(Answers)</h6>
+        {rightPairs.map((right) => {
+          const matched = findMatchFor("right", right);
           return (
             <li
-              key={a.id}
-              className="list-item answer"
-              onClick={() => handleAnswerClick(a.id)}
+              key={right}
+              className={`list-item answer ${matched ? "matched" : ""}`}
+              onClick={() => handleAnswerClick(right)}
             >
-              {a.content}
-              {matchedQuestion && (
+              {right}
+              {matched && (
                 <span className="match-indicator">
-                  ✅ Matched with:{" "}
-                  {questions.find((q) => q.id === matchedQuestion.qId)?.content}
+                  ✅ Matched with: {matched.left}
                 </span>
               )}
             </li>

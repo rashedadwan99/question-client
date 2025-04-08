@@ -7,7 +7,7 @@ function MainLayout({ children }) {
     <>
       <Header />
       <Row className="justify-content-center align-items-center">
-        <Col xs={12} sm={12} md={12}>
+        <Col xs={10} sm={11} md={11}>
           {children}
         </Col>
       </Row>

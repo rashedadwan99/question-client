@@ -5,59 +5,41 @@ import { QuestionContext } from ".";
 import "./app.css";
 import Choosing from "./components/questions/choosingQuestion/Choosing";
 import Matching from "./components/questions/matchingQuestions/Matching";
+import { getAllQuestions } from "./services/questionService";
+import LoadingScreen from "./components/common/loadingScreen/LoadingScreen";
 function App() {
-  const [questions, setQuestions] = useState([
-    {
-      id: 1,
-      label: "what is your hoppies",
-      answers: [
-        {
-          id: 153535,
-          content: "football",
-        },
-        {
-          id: 256565,
-          content: "basketball",
-        },
-        {
-          id: 3245757537,
-          content: "tennis",
-        },
-      ],
-    },
-    {
-      id: 243545464,
-      label: "matching",
-      questions: [
-        { content: "jordan", id: 45885651 },
-        { content: "palestine", id: 288989656 },
-      ],
-      answers: [
-        {
-          id: 686868686,
-          content: "a mansaf country",
-        },
-        {
-          id: 68686352,
-          content: "an arabic country, forever",
-        },
-      ],
-    },
-  ]);
+  const [questions, setQuestions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
-    const updatedQs = questions.map((q) => {
-      return !q.questions
-        ? {
-            ...q,
-            component: Choosing,
-          }
-        : {
-            ...q,
-            component: Matching,
-          };
-    });
+    const getQuestionsHandler = async () => {
+      try {
+        setIsLoading(true);
+        const { data: questions } = await getAllQuestions();
+        setIsLoading(false);
 
-    setQuestions(updatedQs);
+        const updatedQs = questions.map((q) => {
+          return q.type === "multiple"
+            ? {
+                ...q,
+                component: Choosing,
+              }
+            : q.type === "matching"
+            ? {
+                ...q,
+                component: Matching,
+              }
+            : {
+                ...q,
+                component: "",
+              };
+        });
+
+        setQuestions(updatedQs);
+      } catch (error) {
+        setIsLoading(false);
+      }
+    };
+    getQuestionsHandler();
   }, []);
   const [questionIndex, setQuestionIndex] = useState(0);
   return (
@@ -65,7 +47,7 @@ function App() {
       value={{ questions, setQuestions, questionIndex, setQuestionIndex }}
     >
       <Container fluid className="app-container">
-        <MainRoutes />
+        {!isLoading ? <MainRoutes /> : <LoadingScreen />}
       </Container>
     </QuestionContext.Provider>
   );

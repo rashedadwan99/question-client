@@ -27,7 +27,9 @@
   list-style-type: circle !important;
 }
 
-
+.list-item.answer {
+  background-color: var(--gray);
+}
 
 @media (max-width:768px) {
   .vertical-line {

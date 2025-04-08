@@ -1,4 +1,4 @@
-.question-label {
+.question-content {
   text-align: center;
   text-transform: capitalize;
 }
@@ -52,4 +52,9 @@
 
 .list-item.selected {
   border: 3px solid var(--green);
+}
+
+.woman-img {
+  margin: 0 auto;
+  height: 300px;
 }

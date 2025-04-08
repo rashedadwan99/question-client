@@ -6,6 +6,7 @@ import Stepper from "../../stepper/Stepper";
 import Cbutton from "../../common/button/Cbutton";
 import { QuestionContext } from "../../..";
 import "./questionLayout.css";
+import DomParser from "../../common/dom-parser/DomParser";
 function QuestionLayout() {
   const { questions, questionIndex, setQuestionIndex } =
     useContext(QuestionContext);
@@ -20,7 +21,7 @@ function QuestionLayout() {
       setQuestionIndex(questionIndex + 1);
       setAnimationName("");
     }, [1000]);
-  }, [questionIndex]);
+  }, [questionIndex, setQuestionIndex]);
   const onClickBack = useCallback(() => {
     setNext(0);
     setAnimationName("to-right");
@@ -28,37 +29,32 @@ function QuestionLayout() {
       setQuestionIndex(questionIndex - 1);
       setAnimationName("");
     }, [1000]);
-  }, [questionIndex]);
+  }, [questionIndex, setQuestionIndex]);
 
-  const componentProps = !questions[questionIndex].questions
-    ? {
-        answers: questions[questionIndex].answers,
-        question: questions[questionIndex],
-        animationName,
-        data,
-        setData,
-      }
-    : {
-        answers: questions[questionIndex].answers,
-        questions: questions[questionIndex].questions,
-        data,
-        setData,
-      };
-  const QuestionComponent = questions[questionIndex].component;
+  const componentProps =
+    questions[questionIndex]?.type === "multiple"
+      ? {
+          question: questions[questionIndex],
+          animationName,
+          data,
+          setData,
+        }
+      : {
+          data,
+          setData,
+          question: questions[questionIndex],
+        };
+  const QuestionComponent = questions[questionIndex]?.component;
   return (
-    <Row className="justify-content-between align-items-start">
-      <Col xs={12} sm={12} md={12} lg={4} className="my-3">
-        <Cimg
-          src={Qimg}
-          alt="woman"
-          style={{ objectFit: "cover", maxWidth: "100%" }}
-        />
+    <Row className="justify-content-between align-items-start px-1">
+      <Col xs={12} sm={12} md={12} lg={6} className="my-3">
+        <Cimg src={Qimg} alt="woman" className="woman-img" />
         <Stepper {...{ questions, questionIndex, next }} />
       </Col>
-      <Col xs={12} sm={12} md={12} lg={8}>
+      <Col xs={12} sm={12} md={12} lg={6}>
         <Row className="justify-content-center">
-          <h3 className="question-label mb-5">
-            {questions[questionIndex].label}
+          <h3 className="question-content mb-5">
+            <DomParser htmlResponse={questions[questionIndex]?.content} />
           </h3>
           <Stack
             className={`mb-3 justify-content-center align-items-start ${animationName}`}

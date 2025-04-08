@@ -1,30 +1,35 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./choosing.css";
 import Cimg from "../../common/img/Cimg";
 import CheckImg from "../../../assets/images/Check.gif";
-function Choosing({ answers = [], question, data, setData, animationName }) {
-  const handleChoosing = (ans) => {
+import { QuestionContext } from "../../..";
+function Choosing({ question, data, setData, animationName }) {
+  const { questionIndex } = useContext(QuestionContext);
+  const [selectedChoice, setSelectedChoice] = useState("");
+  const handleChoosing = (c) => {
     const updatedData = data.filter((d) => d.qId !== question.id);
-    const obj = { qId: question.id, ansId: ans.id };
+    setSelectedChoice(c.text);
+    const obj = { question: question._id, selectedChoice: c.text };
     setData([...updatedData, obj]);
   };
-  const handleIsSelected = (ans) =>
-    data.find((d) => d.ansId === ans.id && d.qId === question.id);
-
+  const handleIsSelected = (c) => selectedChoice === c.text;
+  useEffect(() => {
+    setSelectedChoice(data[questionIndex]?.selectedChoice);
+  }, [data, questionIndex]);
   return (
     <ul>
-      {answers.map((ans, i) => {
+      {question.choices.map((c, i) => {
         return (
           <li
             className={`list-item ${animationName} ${
-              handleIsSelected(ans) ? " selected" : ""
+              handleIsSelected(c) ? " selected" : ""
             }`}
             style={{ animationDelay: `0.3${i}s` }}
-            key={ans.id}
-            onClick={() => handleChoosing(ans)}
+            key={c.text}
+            onClick={() => handleChoosing(c)}
           >
-            {ans.content}
-            {handleIsSelected(ans) ? (
+            {c.text}
+            {handleIsSelected(c) ? (
               <Cimg src={CheckImg} alt="checked" className="check-mark" />
             ) : (
               <></>

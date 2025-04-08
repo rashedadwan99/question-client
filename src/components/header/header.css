@@ -1,7 +1,6 @@
 header {
   position: relative;
   top: 0;
-  left: -11.5px;
   width: 300px !important;
   height: 80px;
   background-color: var(--dark-red);
