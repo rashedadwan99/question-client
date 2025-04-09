@@ -2,7 +2,7 @@
   outline: 0;
   border-radius: var(--border-radius);
   min-width: 150px;
-  min-height: 60px;
+  min-height: 45px;
   padding: 2px 8px;
   color: var(--white);
   text-transform: capitalize;

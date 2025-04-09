@@ -7,9 +7,37 @@ import Choosing from "./components/questions/choosingQuestion/Choosing";
 import Matching from "./components/questions/matchingQuestions/Matching";
 import { getAllQuestions } from "./services/questionService";
 import LoadingScreen from "./components/common/loadingScreen/LoadingScreen";
+import Filling from "./components/questions/fillingQuestions/Filling";
+import FirstForm from "./components/questions/first-form/FirstForm";
+import { ToastContainer } from "react-toastify";
+
 function App() {
   const [questions, setQuestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [questionIndex, setQuestionIndex] = useState(0);
+
+  const [leftPairs, setLeftPairs] = useState([]);
+  const [rightPairs, setRightPairs] = useState([]);
+
+  const currentQuestion = questions[questionIndex];
+
+  const shuffle = (array) =>
+    [...array]
+      .map((value) => ({ value, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(({ value }) => value);
+
+  useEffect(() => {
+    if (currentQuestion?.matchingPairs) {
+      setLeftPairs(
+        shuffle(currentQuestion.matchingPairs.map((pair) => pair.left))
+      );
+      setRightPairs(
+        shuffle(currentQuestion.matchingPairs.map((pair) => pair.right))
+      );
+    }
+  }, [currentQuestion]);
+
   useEffect(() => {
     const getQuestionsHandler = async () => {
       try {
@@ -18,37 +46,50 @@ function App() {
         setIsLoading(false);
 
         const updatedQs = questions.map((q) => {
-          return q.type === "multiple"
-            ? {
-                ...q,
-                component: Choosing,
-              }
-            : q.type === "matching"
-            ? {
-                ...q,
-                component: Matching,
-              }
-            : {
-                ...q,
-                component: "",
-              };
+          const base = { ...q, goNext: false };
+          if (q.type === "multiple") return { ...base, component: Choosing };
+          if (q.type === "matching") return { ...base, component: Matching };
+          return { ...base, component: Filling };
         });
 
-        setQuestions(updatedQs);
+        setQuestions([
+          {
+            content: "<b>Fill the Form<b>",
+            name: "",
+            universityNumber: "",
+            component: FirstForm,
+          },
+          ...updatedQs,
+        ]);
       } catch (error) {
+        console.error("Failed to fetch questions:", error);
         setIsLoading(false);
       }
     };
+
     getQuestionsHandler();
   }, []);
-  const [questionIndex, setQuestionIndex] = useState(0);
+
   return (
     <QuestionContext.Provider
-      value={{ questions, setQuestions, questionIndex, setQuestionIndex }}
+      value={{
+        questions,
+        setQuestions,
+        questionIndex,
+        setQuestionIndex,
+        leftPairs,
+        rightPairs,
+      }}
     >
-      <Container fluid className="app-container">
-        {!isLoading ? <MainRoutes /> : <LoadingScreen />}
-      </Container>
+      {!isLoading ? (
+        <Container fluid className="app-container">
+          <ToastContainer />
+
+          <MainRoutes />
+        </Container>
+      ) : (
+        <LoadingScreen />
+      )}
     </QuestionContext.Provider>
   );
 }

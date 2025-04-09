@@ -1,21 +1,19 @@
-import React, { useContext, useEffect, useState } from "react";
-import "./choosing.css";
+import React from "react";
 import Cimg from "../../common/img/Cimg";
 import CheckImg from "../../../assets/images/Check.gif";
-import { QuestionContext } from "../../..";
+import "./choosing.css";
 function Choosing({ question, data, setData, animationName }) {
-  const { questionIndex } = useContext(QuestionContext);
-  const [selectedChoice, setSelectedChoice] = useState("");
   const handleChoosing = (c) => {
-    const updatedData = data.filter((d) => d.qId !== question.id);
-    setSelectedChoice(c.text);
-    const obj = { question: question._id, selectedChoice: c.text };
+    const updatedData = data.filter((d) => d.questionId !== question._id);
+    const obj = { questionId: question._id, selectedChoice: c.text };
     setData([...updatedData, obj]);
   };
-  const handleIsSelected = (c) => selectedChoice === c.text;
-  useEffect(() => {
-    setSelectedChoice(data[questionIndex]?.selectedChoice);
-  }, [data, questionIndex]);
+  const handleIsSelected = (c) => {
+    const currentQuestionData = data.find((d) => d.questionId === question._id);
+
+    return c.text === currentQuestionData?.selectedChoice;
+  };
+
   return (
     <ul>
       {question.choices.map((c, i) => {

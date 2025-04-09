@@ -1,14 +1,9 @@
-.question-content {
-  text-align: center;
-  text-transform: capitalize;
-}
-
 .to-left {
-  animation: translateXAnimationLeft 1s ease-in-out infinite alternate;
+  animation: translateXAnimationLeft 0.5s ease-in-out infinite alternate;
 }
 
 .to-right {
-  animation: translateXAnimationRight 1s ease-in-out infinite alternate;
+  animation: translateXAnimationRight 0.5s ease-in-out infinite alternate;
 }
 
 @keyframes translateXAnimationLeft {
