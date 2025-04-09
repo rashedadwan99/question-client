@@ -7,8 +7,8 @@ function Matching({ question, setData, data }) {
   const [leftPair, setLeftPair] = useState(null);
   const { leftPairs, rightPairs } = useContext(QuestionContext);
 
-  const matchingPairs =
-    data.find((entry) => entry.matchingPairs)?.matchingPairs || [];
+  const matchingAnswer =
+    data.find((entry) => entry.matchingAnswer)?.matchingAnswer || [];
 
   const handleQuestionClick = (left) => {
     setLeftPair(left);
@@ -17,32 +17,32 @@ function Matching({ question, setData, data }) {
   const handleAnswerClick = (right) => {
     if (!leftPair) return;
 
-    const matchedPair = matchingPairs.find(
+    const matchedPair = matchingAnswer.find(
       (pair) => pair.left === leftPair && pair.right === right
     );
 
     let updatedPairs;
 
     if (matchedPair) {
-      updatedPairs = matchingPairs.filter(
+      updatedPairs = matchingAnswer.filter(
         (pair) => !(pair.left === leftPair && pair.right === right)
       );
     } else {
-      updatedPairs = matchingPairs
+      updatedPairs = matchingAnswer
         .filter((pair) => pair.left !== leftPair && pair.right !== right)
         .concat({ left: leftPair, right });
     }
 
-    const filteredData = data.filter((d) => !d.matchingPairs);
+    const filteredData = data.filter((d) => !d.matchingAnswer);
     setData([
       ...filteredData,
-      { questionId: question._id, matchingPairs: updatedPairs },
+      { questionId: question._id, matchingAnswer: updatedPairs },
     ]);
     setLeftPair(null);
   };
 
   const findMatchFor = (side, value) =>
-    matchingPairs.find((pair) => pair[side] === value);
+    matchingAnswer.find((pair) => pair[side] === value);
 
   return (
     <Col sm={12}>

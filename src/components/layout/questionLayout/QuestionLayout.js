@@ -8,10 +8,7 @@ import { QuestionContext } from "../../..";
 import "./questionLayout.css";
 import DomParser from "../../common/dom-parser/DomParser";
 import { Toast } from "../../common/toast/Toast";
-import {
-  checkIfUserSubmit,
-  sendAllAnswers,
-} from "../../../services/questionService";
+import { sendAllAnswers } from "../../../services/questionService";
 function QuestionLayout() {
   const { questions, questionIndex, setQuestionIndex } =
     useContext(QuestionContext);
@@ -44,7 +41,7 @@ function QuestionLayout() {
           return Toast("error", "please fill the field");
         } else if (
           currentQuestion?.type === "matching" &&
-          checkingData?.matchingPairs.length <
+          checkingData?.matchingAnswer.length <
             currentQuestion?.matchingPairs.length
         ) {
           return Toast("error", "please match all");
