@@ -21,23 +21,21 @@ function App() {
 
   const currentQuestion = questions[questionIndex];
 
-  const shuffle = (array) =>
-    [...array]
-      .map((value) => ({ value, sort: Math.random() }))
-      .sort((a, b) => a.sort - b.sort)
-      .map(({ value }) => value);
-
   useEffect(() => {
+    const shuffle = (array) =>
+      [...array]
+        .map((value) => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value);
+
     if (currentQuestion?.matchingPairs) {
-      setLeftPairs(
-        shuffle(currentQuestion.matchingPairs.map((pair) => pair.left))
-      );
-      setRightPairs(
-        shuffle(currentQuestion.matchingPairs.map((pair) => pair.right))
-      );
+      const lefts = currentQuestion.matchingPairs.map((pair) => pair.left);
+      const rights = currentQuestion.matchingPairs.map((pair) => pair.right);
+
+      setLeftPairs(shuffle(lefts));
+      setRightPairs(shuffle(rights));
     }
   }, [currentQuestion]);
-
   useEffect(() => {
     const getQuestionsHandler = async () => {
       try {

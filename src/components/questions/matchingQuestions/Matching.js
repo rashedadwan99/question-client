@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import "./matching.css";
 import { Col, Row } from "react-bootstrap";
 import { QuestionContext } from "../../..";
+import { sliceString } from "../../../utils/sliceString";
 
 function Matching({ question, setData, data }) {
   const [leftPair, setLeftPair] = useState(null);
@@ -43,19 +44,19 @@ function Matching({ question, setData, data }) {
 
   const findMatchFor = (side, value) =>
     matchingAnswer.find((pair) => pair[side] === value);
-
   return (
     <Col sm={12}>
       <Row>
+        <h6>click on the question then choose the answer</h6>
         <div className="matching-container">
           {/* Questions Column */}
           <ul className="column">
             <h6>(Questions)</h6>
-            {leftPairs.map((left) => {
+            {leftPairs.map((left, i) => {
               const matched = findMatchFor("left", left);
               return (
                 <li
-                  key={left}
+                  key={i}
                   className={`list-item question ${
                     leftPair === left ? "selected" : ""
                   } ${matched ? "matched" : ""}`}
@@ -64,7 +65,8 @@ function Matching({ question, setData, data }) {
                   {left}
                   {matched && (
                     <span className="match-indicator">
-                      ✅ Matched with: {matched.right}
+                      ✅ Matched with:
+                      {sliceString(matched.right)}
                     </span>
                   )}
                 </li>
@@ -77,18 +79,19 @@ function Matching({ question, setData, data }) {
           {/* Answers Column */}
           <ul className="column">
             <h6>(Answers)</h6>
-            {rightPairs.map((right) => {
+            {rightPairs.map((right, i) => {
               const matched = findMatchFor("right", right);
               return (
                 <li
-                  key={right}
+                  key={i}
                   className={`list-item answer ${matched ? "matched" : ""}`}
                   onClick={() => handleAnswerClick(right)}
                 >
                   {right}
                   {matched && (
                     <span className="match-indicator">
-                      ✅ Matched with: {matched.left}
+                      ✅ Matched with:
+                      {sliceString(matched.left)}
                     </span>
                   )}
                 </li>

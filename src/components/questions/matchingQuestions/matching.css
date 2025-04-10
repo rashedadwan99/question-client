@@ -2,6 +2,7 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
 }
 
 .matching-container h6 {
@@ -24,7 +25,8 @@
 
 
 .matching-container ul {
-  list-style-type: circle !important;
+  list-style-type: none !important;
+  width: 100% !important;
 }
 
 .list-item.answer {
@@ -78,7 +80,7 @@
   font-size: 12px !important;
   display: block;
   position: absolute;
-  top: 40px;
+  top: 80%;
   z-index: 5;
   background-color: var(--green);
   font-size: 0.8rem;

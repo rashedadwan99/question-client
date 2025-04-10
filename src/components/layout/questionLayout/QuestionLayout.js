@@ -96,11 +96,11 @@ function QuestionLayout() {
   const QuestionComponent = currentQuestion?.component;
   return (
     <Row className="justify-content-between align-items-start px-1">
-      <Col xs={12} sm={12} md={12} lg={6} className="my-3">
+      <Col xs={12} sm={12} md={12} lg={4} className="my-3">
         <Cimg src={Qimg} alt="woman" className="woman-img" />
         <Stepper {...{ questions, questionIndex, next }} />
       </Col>
-      <Col xs={12} sm={12} md={12} lg={6}>
+      <Col xs={12} sm={12} md={12} lg={8}>
         <Row className="justify-content-center">
           <DomParser
             htmlResponse={questions[questionIndex]?.content}

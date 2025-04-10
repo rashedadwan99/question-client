@@ -9,7 +9,11 @@ function Filling({ data, setData, question }) {
   });
 
   useEffect(() => {
-    if (!answer.filledAnswer) return;
+    const existing = data.find((d) => d.questionId === question._id);
+    setAnswer({ filledAnswer: existing?.filledAnswer || "" });
+  }, [question._id]);
+  useEffect(() => {
+    if (answer.filledAnswer === "") return;
 
     setData((prevData) => {
       const existingIndex = prevData.findIndex(
@@ -30,9 +34,8 @@ function Filling({ data, setData, question }) {
         { questionId: question._id, filledAnswer: answer.filledAnswer },
       ];
     });
-  }, [answer, question._id]);
+  }, [answer.filledAnswer, question._id, setData]);
 
-  // Make the value field take the filledAnswer from data
   const fields = [
     {
       name: "filledAnswer",
