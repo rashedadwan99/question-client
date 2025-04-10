@@ -17,18 +17,18 @@ function QuestionLayout() {
   const [isSending, setIsSending] = useState(false);
   const [animationName, setAnimationName] = useState("");
   const currentQuestion = questions[questionIndex];
-
   const onClickNext = useCallback(
     async (doSubmit) => {
+      const checkingData = data.find(
+        (d) => d.questionId === currentQuestion._id
+      );
+      console.log(data);
       if (!questionIndex) {
         if (!currentQuestion?.name || !currentQuestion?.universityNumber) {
           return Toast("error", "please fill all fields");
         }
       }
       if (questionIndex) {
-        const checkingData = data.find(
-          (d) => d.questionId === currentQuestion._id
-        );
         if (
           currentQuestion?.type === "multiple" &&
           !checkingData?.selectedChoice

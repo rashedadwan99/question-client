@@ -5,6 +5,7 @@ import { checkRequiredFields } from "../../../validation/validation";
 import { Toast } from "../toast/Toast";
 import "./form.css";
 import Cbutton from "../button/Cbutton";
+import TextArea from "./Ctextarea";
 const CForm = memo(
   ({ data, fields, buttonLabel, variant, setData, doSubmit, loading }) => {
     const handleSubmit = useCallback(
@@ -30,7 +31,22 @@ const CForm = memo(
         <Form noValidate onSubmit={(e) => e.preventDefault()}>
           <Row className={`mt-2 justify-content-start `}>
             {fields.map((f, i) => {
-              return (
+              return f.type === "textarea" ? (
+                <TextArea
+                  label={f.label}
+                  id={f.id}
+                  value={data[f.name]}
+                  name={f.name}
+                  required={f.required}
+                  type={f.type}
+                  placeholder={f.placeholder}
+                  icon={f.icon}
+                  key={i}
+                  onChange={onChange}
+                  onClick={f.onClick}
+                  validate={f.validate}
+                />
+              ) : (
                 <Col key={i} md={f.md ?? 12} className="my-1">
                   <CInput
                     label={f.label}
