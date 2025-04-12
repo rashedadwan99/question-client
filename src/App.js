@@ -52,7 +52,7 @@ function App() {
 
         setQuestions([
           {
-            content: "<b>Fill the Form<b>",
+            content: "Fill the Form",
             name: "",
             universityNumber: "",
             component: FirstForm,

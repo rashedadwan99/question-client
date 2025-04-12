@@ -51,8 +51,7 @@ const TextToSpeech = ({ htmlString }) => {
   };
 
   useEffect(() => {
-    if (!htmlString) return;
-
+    if (!htmlString || questionIndex === 0) return;
     if (prevIndex.current !== questionIndex) {
       setIsSpeaking(false);
       prevIndex.current = questionIndex;
@@ -93,7 +92,7 @@ const TextToSpeech = ({ htmlString }) => {
         width="300"
         style={{
           ...styles.gif,
-          animation: "playGif 1.5s ease-in-out infinite",
+          animation: "playGif 2s ease-in-out infinite",
           animationPlayState: "paused",
         }}
         alt="Speaking animation"
