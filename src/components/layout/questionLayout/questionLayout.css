@@ -6,6 +6,10 @@
   animation: translateXAnimationRight 0.5s ease-in-out infinite alternate;
 }
 
+.stack-buttons button {
+  margin: inherit 2px;
+}
+
 @keyframes translateXAnimationLeft {
   0% {
     transform: translateX(0);

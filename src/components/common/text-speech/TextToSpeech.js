@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import lipsyncGif from "./lipsync.gif"; // Use GIF instead of video
+import lipsyncGif from "./lipsync.gif";
 import { QuestionContext } from "../../..";
 
 const TextToSpeech = ({ htmlString }) => {
@@ -7,6 +7,48 @@ const TextToSpeech = ({ htmlString }) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const prevIndex = useRef(questionIndex);
   const gifRef = useRef(null);
+
+  const speak = (text) => {
+    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+      console.warn("Speech Synthesis API is not supported in this browser.");
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 1.5;
+
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      requestAnimationFrame(() => {
+        if (gifRef.current) gifRef.current.style.animationPlayState = "running";
+      });
+    };
+
+    const stopGif = () => {
+      setIsSpeaking(false);
+      if (gifRef.current) gifRef.current.style.animationPlayState = "paused";
+    };
+
+    utterance.onend = stopGif;
+    utterance.onerror = stopGif;
+
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+
+    // Ensure voices are loaded (fix for some browsers)
+    const ensureSpeak = () => {
+      if (window.speechSynthesis.getVoices().length === 0) {
+        window.speechSynthesis.onvoiceschanged = () => {
+          window.speechSynthesis.speak(utterance);
+        };
+      } else {
+        window.speechSynthesis.speak(utterance);
+      }
+    };
+
+    ensureSpeak();
+  };
 
   useEffect(() => {
     if (!htmlString) return;
@@ -31,34 +73,7 @@ const TextToSpeech = ({ htmlString }) => {
     });
 
     const plainText = tempDiv.innerText;
-
-    const utterance = new SpeechSynthesisUtterance(plainText);
-    utterance.lang = "en-US";
-    utterance.rate = 1.5;
-
-    utterance.onstart = () => {
-      setIsSpeaking(true);
-      if (gifRef.current) {
-        gifRef.current.style.animationPlayState = "running"; // Start GIF animation
-      }
-    };
-
-    utterance.onend = () => {
-      setIsSpeaking(false);
-      if (gifRef.current) {
-        gifRef.current.style.animationPlayState = "paused"; // Pause GIF animation
-      }
-    };
-
-    utterance.onerror = () => {
-      setIsSpeaking(false);
-      if (gifRef.current) {
-        gifRef.current.style.animationPlayState = "paused"; // Pause GIF animation on error
-      }
-    };
-
-    speechSynthesis.cancel();
-    speechSynthesis.speak(utterance);
+    if (plainText.trim()) speak(plainText);
   }, [htmlString, questionIndex]);
 
   return (
@@ -68,7 +83,7 @@ const TextToSpeech = ({ htmlString }) => {
         transform: isSpeaking ? "translateY(0)" : "translateY(150%)",
         width: "initial",
         opacity: isSpeaking ? 1 : 0,
-        transition: "all 0.6s ease-in-out",
+        transition: "all 0.5s ease-out",
         pointerEvents: "none",
       }}
     >
@@ -78,9 +93,10 @@ const TextToSpeech = ({ htmlString }) => {
         width="300"
         style={{
           ...styles.gif,
-          animation: "playGif 1.5s ease-in-out infinite", // Animation for GIF
-          animationPlayState: "paused", // Pause by default
+          animation: "playGif 1.5s ease-in-out infinite",
+          animationPlayState: "paused",
         }}
+        alt="Speaking animation"
       />
     </div>
   );

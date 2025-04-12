@@ -91,7 +91,10 @@ function QuestionLayout() {
           >
             {QuestionComponent && <QuestionComponent {...componentProps} />}
           </Stack>
-          <Stack direction="horizontal" className="justify-content-between">
+          <Stack
+            direction="horizontal"
+            className="justify-content-between stack-buttons"
+          >
             {questionIndex ? (
               <Cbutton onClick={onClickBack} disabled={isSending}>
                 back
