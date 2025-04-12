@@ -26,13 +26,14 @@ function QuestionLayout() {
         if (!currentQuestion?.name || !currentQuestion?.universityNumber) {
           return Toast("error", "please fill all fields");
         }
-      } else if (
-        currentQuestion?.type === "matching" &&
-        checkingData?.matchingAnswer.length <
-          currentQuestion?.matchingPairs.length
-      ) {
-        return Toast("error", "please match all");
       }
+      // else if (
+      //   currentQuestion?.type === "matching" &&
+      //   checkingData?.matchingAnswer.length <
+      //     currentQuestion?.matchingPairs.length
+      // ) {
+      //   return Toast("error", "please match all");
+      // }
 
       if (doSubmit) {
         try {
