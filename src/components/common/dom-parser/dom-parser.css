@@ -4,6 +4,108 @@
   white-space: pre-line;
 }
 
-iframe {
+iframe,
+.parser-container img,
+.parser-container video {
   max-width: 100% !important;
+}
+
+.parser-container img {
+  animation: dreamy-glow 1s ease-in-out infinite alternate;
+  transform-origin: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+  border-radius: 12px;
+}
+
+@keyframes dreamy-glow {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.95;
+    filter: brightness(1);
+    border-radius: 12px;
+  }
+
+  50% {
+    transform: scale(1.03) rotate(1deg);
+    opacity: 1;
+    filter: brightness(1.1);
+    border-radius: 16px;
+  }
+
+  100% {
+    transform: scale(1) rotate(-1deg);
+    opacity: 0.98;
+    filter: brightness(1.05);
+    border-radius: 12px;
+  }
+}
+
+.parser-container img {
+  animation: float-glow 1s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(173, 216, 230, 0.4);
+  border-radius: 16px;
+  transition: transform 0.3s ease;
+}
+
+@keyframes float-glow {
+  0% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.2));
+  }
+
+  50% {
+    transform: translateY(-8px) scale(1.02);
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.2));
+  }
+}
+
+
+.parser-container img {
+  animation: shimmer-pulse 0.5s ease-in-out infinite;
+  border-radius: 14px;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+@keyframes shimmer-pulse {
+  0% {
+    opacity: 0.95;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+  }
+
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+  }
+
+  100% {
+    opacity: 0.95;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+  }
+}
+
+
+.parser-container img {
+  animation: quick-glow-pop 1s ease-in-out infinite alternate;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+@keyframes quick-glow-pop {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+  }
+
+  100% {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+    box-shadow: 0 0 12px rgba(0, 123, 255, 0.5);
+  }
 }
