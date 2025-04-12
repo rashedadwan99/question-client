@@ -9,6 +9,7 @@ import "./questionLayout.css";
 import DomParser from "../../common/dom-parser/DomParser";
 import { Toast } from "../../common/toast/Toast";
 import { sendAllAnswers } from "../../../services/questionService";
+import TextToSpeech from "../../common/text-speech/TextToSpeech";
 function QuestionLayout() {
   const { questions, questionIndex, setQuestionIndex } =
     useContext(QuestionContext);
@@ -24,13 +25,6 @@ function QuestionLayout() {
           return Toast("error", "please fill all fields");
         }
       }
-      // else if (
-      //   currentQuestion?.type === "matching" &&
-      //   checkingData?.matchingAnswer.length <
-      //     currentQuestion?.matchingPairs.length
-      // ) {
-      //   return Toast("error", "please match all");
-      // }
 
       if (doSubmit) {
         try {
@@ -91,6 +85,7 @@ function QuestionLayout() {
             htmlResponse={questions[questionIndex]?.content}
             className="mb-2"
           />
+          <TextToSpeech htmlString={questions[questionIndex]?.content} />
           <Stack
             className={`mb-3 justify-content-center align-items-start ${animationName}`}
           >
