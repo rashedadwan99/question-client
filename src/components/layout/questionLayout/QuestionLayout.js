@@ -22,31 +22,18 @@ function QuestionLayout() {
       const checkingData = data.find(
         (d) => d.questionId === currentQuestion._id
       );
-      console.log(data);
       if (!questionIndex) {
         if (!currentQuestion?.name || !currentQuestion?.universityNumber) {
           return Toast("error", "please fill all fields");
         }
+      } else if (
+        currentQuestion?.type === "matching" &&
+        checkingData?.matchingAnswer.length <
+          currentQuestion?.matchingPairs.length
+      ) {
+        return Toast("error", "please match all");
       }
-      if (questionIndex) {
-        if (
-          currentQuestion?.type === "multiple" &&
-          !checkingData?.selectedChoice
-        ) {
-          return Toast("error", "please select a choice");
-        } else if (
-          currentQuestion?.type === "filling" &&
-          !checkingData?.filledAnswer
-        ) {
-          return Toast("error", "please fill the field");
-        } else if (
-          currentQuestion?.type === "matching" &&
-          checkingData?.matchingAnswer.length <
-            currentQuestion?.matchingPairs.length
-        ) {
-          return Toast("error", "please match all");
-        }
-      }
+
       if (doSubmit) {
         try {
           setIsSending(true);
