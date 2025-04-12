@@ -13,7 +13,7 @@ import { ToastContainer } from "react-toastify";
 
 function App() {
   const [questions, setQuestions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [questionIndex, setQuestionIndex] = useState(0);
 
   const [leftPairs, setLeftPairs] = useState([]);
