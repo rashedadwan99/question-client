@@ -9,7 +9,7 @@ function Matching({ question, setData, data }) {
   const { leftPairs, rightPairs } = useContext(QuestionContext);
 
   const matchingAnswer =
-    data.find((entry) => entry.matchingAnswer)?.matchingAnswer || [];
+    data?.find((entry) => entry.matchingAnswer)?.matchingAnswer || [];
 
   const handleQuestionClick = (left) => {
     setLeftPair(left);
@@ -34,7 +34,7 @@ function Matching({ question, setData, data }) {
         .concat({ left: leftPair, right });
     }
 
-    const filteredData = data.filter((d) => !d.matchingAnswer);
+    const filteredData = data?.filter((d) => !d.matchingAnswer);
     setData([
       ...filteredData,
       { questionId: question._id, matchingAnswer: updatedPairs },
