@@ -10,6 +10,8 @@ import LoadingScreen from "./components/common/loadingScreen/LoadingScreen";
 import Filling from "./components/questions/fillingQuestions/Filling";
 import FirstForm from "./components/questions/first-form/FirstForm";
 import { ToastContainer } from "react-toastify";
+import { useLocation } from "react-router-dom";
+import { routes } from "./routes/routes";
 
 function App() {
   const [questions, setQuestions] = useState([]);
@@ -36,6 +38,7 @@ function App() {
       setRightPairs(shuffle(rights));
     }
   }, [currentQuestion]);
+  const { pathname } = useLocation();
   useEffect(() => {
     const getQuestionsHandler = async () => {
       try {
@@ -49,16 +52,19 @@ function App() {
           if (q.type === "matching") return { ...base, component: Matching };
           return { ...base, component: Filling };
         });
-
-        setQuestions([
-          {
-            content: "Fill the Form",
-            name: "",
-            universityNumber: "",
-            component: FirstForm,
-          },
-          ...updatedQs,
-        ]);
+        setQuestions(
+          pathname === routes.homeRoute
+            ? [
+                {
+                  content: "Fill the Form",
+                  name: "",
+                  universityNumber: "",
+                  component: FirstForm,
+                },
+                ...updatedQs,
+              ]
+            : [...updatedQs]
+        );
       } catch (error) {
         console.error("Failed to fetch questions:", error);
         setIsLoading(false);
@@ -66,7 +72,7 @@ function App() {
     };
 
     getQuestionsHandler();
-  }, []);
+  }, [pathname]);
 
   return (
     <QuestionContext.Provider

@@ -3,13 +3,19 @@ import "./matching.css";
 import { Col, Row } from "react-bootstrap";
 import { QuestionContext } from "../../..";
 import { sliceString } from "../../../utils/sliceString";
+import { useLocation } from "react-router-dom";
+import { routes } from "../../../routes/routes";
 
 function Matching({ question, setData, data }) {
   const [leftPair, setLeftPair] = useState(null);
   const { leftPairs, rightPairs } = useContext(QuestionContext);
+  const { pathname } = useLocation();
 
-  const matchingAnswer =
-    data?.find((entry) => entry.matchingAnswer)?.matchingAnswer || [];
+  const isHomePage = pathname === routes.homeRoute;
+
+  const matchingAnswer = isHomePage
+    ? data?.find((entry) => entry.matchingAnswer)?.matchingAnswer || []
+    : question.matchingPairs || [];
 
   const handleQuestionClick = (left) => {
     setLeftPair(left);
@@ -41,7 +47,6 @@ function Matching({ question, setData, data }) {
     ]);
     setLeftPair(null);
   };
-
   const findMatchFor = (side, value) =>
     matchingAnswer.find((pair) => pair[side] === value);
   return (
@@ -60,7 +65,9 @@ function Matching({ question, setData, data }) {
                   className={`list-item question ${
                     leftPair === left ? "selected" : ""
                   } ${matched ? "matched" : ""}`}
-                  onClick={() => handleQuestionClick(left)}
+                  onClick={() =>
+                    isHomePage ? handleQuestionClick(left) : () => {}
+                  }
                 >
                   {left}
                   {matched && (
@@ -85,7 +92,9 @@ function Matching({ question, setData, data }) {
                 <li
                   key={i}
                   className={`list-item answer ${matched ? "matched" : ""}`}
-                  onClick={() => handleAnswerClick(right)}
+                  onClick={
+                    isHomePage ? () => handleAnswerClick(right) : () => {}
+                  }
                 >
                   {right}
                   {matched && (

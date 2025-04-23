@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import CForm from "../../common/form/CForm";
 import { Col } from "react-bootstrap";
 import { QuestionContext } from "../../..";
+import { useLocation } from "react-router-dom";
+import { routes } from "../../../routes/routes";
 
 function Filling({ data, setData }) {
   const { questions, questionIndex } = useContext(QuestionContext);
@@ -37,19 +39,26 @@ function Filling({ data, setData }) {
       }
     });
   }, [answer.filledAnswer, question._id]);
-
+  const { pathname } = useLocation();
+  const isHomePage = pathname === routes.homeRoute;
   const fields = [
     {
-      name: "filledAnswer",
-      value: answer.filledAnswer,
+      name: isHomePage ? "filledAnswer" : "correctAnswer",
+      value: isHomePage ? answer.filledAnswer : question.correctAnswer,
       label: "Answer",
       type: "textarea",
+      readOnly: pathname === routes.homeRoute ? false : true,
     },
   ];
+  console.log(question.correctAnswer);
 
   return (
     <Col xs={12} sm={12}>
-      <CForm data={answer} setData={setAnswer} fields={fields} />
+      <CForm
+        data={isHomePage ? answer : question}
+        setData={setAnswer}
+        fields={fields}
+      />
     </Col>
   );
 }

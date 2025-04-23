@@ -10,6 +10,8 @@ import DomParser from "../../common/dom-parser/DomParser";
 import { Toast } from "../../common/toast/Toast";
 import { sendAllAnswers } from "../../../services/questionService";
 import TextToSpeech from "../../common/text-speech/TextToSpeech";
+import { useLocation, useNavigate } from "react-router-dom";
+import { routes } from "../../../routes/routes";
 function QuestionLayout() {
   const { questions, questionIndex, setQuestionIndex } =
     useContext(QuestionContext);
@@ -18,9 +20,12 @@ function QuestionLayout() {
   const [isSending, setIsSending] = useState(false);
   const [animationName, setAnimationName] = useState("");
   const currentQuestion = questions[questionIndex];
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const isHomePage = pathname === routes.homeRoute;
   const onClickNext = useCallback(
     async (doSubmit) => {
-      if (!questionIndex) {
+      if (!questionIndex && isHomePage) {
         if (!currentQuestion?.name || !currentQuestion?.universityNumber) {
           return Toast("error", "please fill all fields");
         }
@@ -40,7 +45,8 @@ function QuestionLayout() {
 
           setIsSending(false);
           setTimeout(() => {
-            window.location = "/";
+            navigate(routes.answers, { replace: true });
+            setQuestionIndex(0);
           }, [1000]);
         } catch (error) {
           setIsSending(false);
@@ -85,7 +91,9 @@ function QuestionLayout() {
             htmlResponse={questions[questionIndex]?.content}
             className="mb-2"
           />
-          <TextToSpeech htmlString={questions[questionIndex]?.content} />
+          {isHomePage && (
+            <TextToSpeech htmlString={questions[questionIndex]?.content} />
+          )}
           <Stack
             className={`mb-3 justify-content-center align-items-start ${animationName}`}
           >
@@ -107,13 +115,15 @@ function QuestionLayout() {
                 next
               </Cbutton>
             ) : (
-              <Cbutton
-                variant="secondary"
-                onClick={() => onClickNext(true)}
-                loading={isSending}
-              >
-                submit
-              </Cbutton>
+              isHomePage && (
+                <Cbutton
+                  variant="secondary"
+                  onClick={() => onClickNext(true)}
+                  loading={isSending}
+                >
+                  submit
+                </Cbutton>
+              )
             )}
           </Stack>
         </Row>

@@ -22,13 +22,16 @@ form button {
 }
 
 
+
 .input-group-text,
 .form-control {
   background-color: inherit !important;
-  border: var(--border-radius) !important;
   color: var(--black) !important;
   padding-left: 7px !important;
+  outline: 0 !important;
   font-size: 16px !important;
+  box-shadow: none !important;
+  border: 0 !important;
 }
 
 .input-group-text {
@@ -40,8 +43,8 @@ textarea.form-control:focus {
   outline: 0 !important;
   background-color: inherit !important;
   box-shadow: none !important;
-  border: none !important;
-  border-radius: var(--border-radius) !important;
+  border: 0 !important;
+  /* border-radius: var(--border-radius) !important; */
   background-color: var(--white) !important;
   padding: 5px;
   resize: none !important;
@@ -53,7 +56,8 @@ textarea.form-control:focus {
 
 .input-group,
 textarea.form-control {
-  border-radius: var(--border-radius) !important;
+  border-radius: 0 !important;
+
   background-color: var(--white) !important;
   padding: 5px;
   border: 1px solid var(--gray) !important;

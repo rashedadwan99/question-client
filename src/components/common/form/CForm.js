@@ -45,6 +45,7 @@ const CForm = memo(
                   onChange={onChange}
                   onClick={f.onClick}
                   validate={f.validate}
+                  readOnly={f.readOnly}
                 />
               ) : (
                 <Col key={i} md={f.md ?? 12} className="my-1">
