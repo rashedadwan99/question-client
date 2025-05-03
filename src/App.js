@@ -2,7 +2,6 @@ import { Container } from "react-bootstrap";
 import MainRoutes from "./routes/MainRoutes";
 import { useEffect, useState } from "react";
 import { QuestionContext } from ".";
-import "./app.css";
 import Choosing from "./components/questions/choosingQuestion/Choosing";
 import Matching from "./components/questions/matchingQuestions/Matching";
 import { getAllQuestions } from "./services/questionService";
@@ -12,6 +11,7 @@ import FirstForm from "./components/questions/first-form/FirstForm";
 import { ToastContainer } from "react-toastify";
 import { useLocation } from "react-router-dom";
 import { routes } from "./routes/routes";
+import "./app.css";
 
 function App() {
   const [questions, setQuestions] = useState([]);
