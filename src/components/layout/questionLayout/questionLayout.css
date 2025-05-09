@@ -7,7 +7,7 @@
 }
 
 .stack-buttons button {
-  margin: inherit 2px;
+  margin: 10px 2px;
 }
 
 @keyframes translateXAnimationLeft {
