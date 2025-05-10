@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
-import { QuestionContext } from "../..";
 import "./header.css";
+import { QuestionContext } from "../../context/QuestionProvider";
 function Header() {
   const { questions, questionIndex } = useContext(QuestionContext);
   return (

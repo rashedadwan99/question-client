@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import "./matching.css";
 import { Col, Row } from "react-bootstrap";
-import { QuestionContext } from "../../..";
+import { QuestionContext } from "../../../context/QuestionProvider";
 import { sliceString } from "../../../utils/sliceString";
 import { useLocation } from "react-router-dom";
 import { routes } from "../../../routes/routes";

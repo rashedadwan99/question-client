@@ -1,28 +1,48 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import lipsyncGif from "./lipsync.gif";
-import { QuestionContext } from "../../..";
+import { useAudioContext } from "../../../context/AudioContext";
+import { QuestionContext } from "../../../context/QuestionProvider";
 
-const TextToSpeech = ({ htmlString }) => {
+const TextToSpeech = ({ htmlString, src }) => {
   const { questionIndex } = useContext(QuestionContext);
+  const { isBackgroundAudioPlaying } = useAudioContext();
+
+  const isMuted = questionIndex === 0;
+
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const prevIndex = useRef(questionIndex);
+  const [voicesLoaded, setVoicesLoaded] = useState(false);
+  const prevIndex = useRef(null);
   const gifRef = useRef(null);
 
-  const speak = (text) => {
-    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
-      console.warn("Speech Synthesis API is not supported in this browser.");
-      return;
+  useEffect(() => {
+    const handleVoicesChanged = () => {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        setVoicesLoaded(true);
+      }
+    };
+
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
+      handleVoicesChanged();
     }
+  }, []);
+
+  const speak = (text) => {
+    // if (
+    //   (isBackgroundAudioPlaying && questionIndex !== 0) ||
+    //   questionIndex === 0 // 🔐 block if question index is 0
+    // )
+    //   return;
+
+    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "en-US";
-    utterance.rate = 1.5;
+    utterance.rate = 1;
 
     utterance.onstart = () => {
       setIsSpeaking(true);
-      requestAnimationFrame(() => {
-        if (gifRef.current) gifRef.current.style.animationPlayState = "running";
-      });
+      if (gifRef.current) gifRef.current.style.animationPlayState = "running";
     };
 
     const stopGif = () => {
@@ -33,29 +53,14 @@ const TextToSpeech = ({ htmlString }) => {
     utterance.onend = stopGif;
     utterance.onerror = stopGif;
 
-    // Cancel any ongoing speech
     window.speechSynthesis.cancel();
-
-    // Ensure voices are loaded (fix for some browsers)
-    const ensureSpeak = () => {
-      if (window.speechSynthesis.getVoices().length === 0) {
-        window.speechSynthesis.onvoiceschanged = () => {
-          window.speechSynthesis.speak(utterance);
-        };
-      } else {
-        window.speechSynthesis.speak(utterance);
-      }
-    };
-
-    ensureSpeak();
+    setTimeout(() => {
+      window.speechSynthesis.speak(utterance);
+    }, 100);
   };
 
   useEffect(() => {
-    if (!htmlString || questionIndex === 0) return;
-    if (prevIndex.current !== questionIndex) {
-      setIsSpeaking(false);
-      prevIndex.current = questionIndex;
-    }
+    if (!htmlString || !voicesLoaded) return;
 
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = htmlString;
@@ -72,8 +77,14 @@ const TextToSpeech = ({ htmlString }) => {
     });
 
     const plainText = tempDiv.innerText;
-    if (plainText.trim()) speak(plainText);
-  }, [htmlString, questionIndex]);
+    if (plainText.trim()) {
+      setIsSpeaking(false);
+      speak(plainText);
+      prevIndex.current = questionIndex;
+    }
+  }, [htmlString, questionIndex, voicesLoaded, isMuted]);
+
+  if (questionIndex === 0) return null;
 
   return (
     <div
@@ -88,8 +99,9 @@ const TextToSpeech = ({ htmlString }) => {
     >
       <img
         ref={gifRef}
-        src={lipsyncGif}
-        width="300"
+        src={src}
+        width="200"
+        height="200"
         style={{
           ...styles.gif,
           animation: "playGif 2s ease-in-out infinite",

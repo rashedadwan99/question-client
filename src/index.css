@@ -6,9 +6,7 @@ body {
   margin: 0;
   font-size: 18px;
   overflow-x: hidden;
-  background-repeat: no-repeat;
-  background-position-y: 0;
-  background-size: cover;
+
   min-height: 100vh;
 }
 

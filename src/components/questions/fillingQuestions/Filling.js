@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import CForm from "../../common/form/CForm";
 import { Col } from "react-bootstrap";
-import { QuestionContext } from "../../..";
+import { QuestionContext } from "../../../context/QuestionProvider";
 import { useLocation } from "react-router-dom";
 import { routes } from "../../../routes/routes";
 
@@ -50,7 +50,6 @@ function Filling({ data, setData }) {
       readOnly: pathname === routes.homeRoute ? false : true,
     },
   ];
-  console.log(question.correctAnswer);
 
   return (
     <Col xs={12} sm={12}>

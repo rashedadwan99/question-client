@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import CForm from "../../common/form/CForm";
 import { Col } from "react-bootstrap";
-import { QuestionContext } from "../../..";
+import { QuestionContext } from "../../../context/QuestionProvider";
 
 function FirstForm() {
   const { setQuestions, questions } = useContext(QuestionContext);

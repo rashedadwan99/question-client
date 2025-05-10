@@ -1,10 +1,11 @@
-import React, { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { Col, Row, Stack } from "react-bootstrap";
 import Cimg from "../../common/img/Cimg";
 import Qimg from "../../../assets/images/woman.png";
+import Eimg from "../../../assets/images/man.gif";
+import exam from "../../../assets/images/exam.gif";
 import Stepper from "../../stepper/Stepper";
 import Cbutton from "../../common/button/Cbutton";
-import { QuestionContext } from "../../..";
 import "./questionLayout.css";
 import DomParser from "../../common/dom-parser/DomParser";
 import { Toast } from "../../common/toast/Toast";
@@ -12,6 +13,9 @@ import { sendAllAnswers } from "../../../services/questionService";
 import TextToSpeech from "../../common/text-speech/TextToSpeech";
 import { useLocation, useNavigate } from "react-router-dom";
 import { routes } from "../../../routes/routes";
+import mount from "../../../assets/images/mont.gif";
+import vilin from "../../../assets/images/vilin.gif";
+import { QuestionContext } from "../../../context/QuestionProvider";
 function QuestionLayout() {
   const { questions, questionIndex, setQuestionIndex } =
     useContext(QuestionContext);
@@ -79,10 +83,21 @@ function QuestionLayout() {
   };
 
   const QuestionComponent = currentQuestion?.component;
+  const lipsync = useMemo(() => {
+    const condition = isHomePage
+      ? questionIndex % 2 === 0
+      : questionIndex % 2 === 1;
+    if (condition) {
+      return mount;
+    } else {
+      return vilin;
+    }
+  }, [questionIndex, isHomePage]);
   return (
     <Row className="justify-content-between align-items-start px-1">
       <Col xs={12} sm={12} md={12} lg={6} className="my-3">
-        <Cimg src={Qimg} alt="woman" className="woman-img" />
+        {/* <Cimg src={Qimg} alt="woman" className="woman-img" /> */}
+        <Cimg src={exam} alt="exam" className="woman-img" />
         <Stepper {...{ questions, questionIndex, next }} />
       </Col>
       <Col xs={12} sm={12} md={12} lg={6}>
@@ -91,9 +106,17 @@ function QuestionLayout() {
             htmlResponse={questions[questionIndex]?.content}
             className="mb-2"
           />
-          {isHomePage && (
-            <TextToSpeech htmlString={questions[questionIndex]?.content} />
-          )}
+          <TextToSpeech
+            htmlString={
+              isHomePage
+                ? questions[questionIndex]?.content
+                : questions[questionIndex]?.content +
+                  (questions[questionIndex]?.correctAnswer ?? "")
+            }
+            muted={!questionIndex}
+            src={lipsync}
+          />
+
           <Stack
             className={`mb-3 justify-content-center align-items-start ${animationName}`}
           >

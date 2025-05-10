@@ -1,5 +1,8 @@
 .app-container {
   background-image: url("./assets/images/background.jpg");
+  background-repeat: no-repeat;
+  background-position-y: 0;
+  background-size: cover;
   min-height: 100vh;
   max-width: 100vw;
   padding: 0 !important;
