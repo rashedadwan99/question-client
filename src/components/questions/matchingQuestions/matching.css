@@ -82,12 +82,27 @@
   position: absolute;
   top: 80%;
   z-index: 5;
-  background-color: var(--green);
   font-size: 0.8rem;
   padding: 5px;
   border-radius: 8px;
   color: var(--white);
   margin-top: 5px;
+}
+
+.match-indicator.correct {
+  background-color: #d4edda;
+  /* light green */
+  color: #155724;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.match-indicator.incorrect {
+  background-color: #f8d7da;
+  /* light red */
+  color: #721c24;
+  padding: 4px;
+  border-radius: 4px;
 }
 
 .vertical-line {

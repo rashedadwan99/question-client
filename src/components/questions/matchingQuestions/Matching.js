@@ -5,6 +5,8 @@ import { QuestionContext } from "../../../context/QuestionProvider";
 import { sliceString } from "../../../utils/sliceString";
 import { useLocation } from "react-router-dom";
 import { routes } from "../../../routes/routes";
+import correctSound from "../../../assets/audio/correct.mp3";
+import incorrectSound from "../../../assets/audio/incorrect.mp3";
 
 function Matching({ question, setData, data }) {
   const [leftPair, setLeftPair] = useState(null);
@@ -16,6 +18,15 @@ function Matching({ question, setData, data }) {
   const matchingAnswer = isHomePage
     ? data?.find((entry) => entry.matchingAnswer)?.matchingAnswer || []
     : question.matchingPairs || [];
+
+  const correctAudio = new Audio(correctSound);
+  const incorrectAudio = new Audio(incorrectSound);
+
+  const isCorrectMatch = (left, right) => {
+    return question.matchingPairs?.some(
+      (pair) => pair.left === left && pair.right === right
+    );
+  };
 
   const handleQuestionClick = (left) => {
     setLeftPair(left);
@@ -38,6 +49,13 @@ function Matching({ question, setData, data }) {
       updatedPairs = matchingAnswer
         .filter((pair) => pair.left !== leftPair && pair.right !== right)
         .concat({ left: leftPair, right });
+
+      // Play sound
+      if (isCorrectMatch(leftPair, right)) {
+        correctAudio.play();
+      } else {
+        incorrectAudio.play();
+      }
     }
 
     const filteredData = data?.filter((d) => !d.matchingAnswer);
@@ -47,14 +65,18 @@ function Matching({ question, setData, data }) {
     ]);
     setLeftPair(null);
   };
+
   const findMatchFor = (side, value) =>
     matchingAnswer.find((pair) => pair[side] === value);
+
   return (
     <Col sm={12}>
       <Row>
-        <h6>click on the question then choose the answer</h6>
+        <h6 style={{ color: "red" }}>
+          Click on the choice then choose the answer, if you want to change the
+          answers just click again on the selected choice
+        </h6>
         <div className="matching-container">
-          {/* Questions Column */}
           <ul className="column">
             <h6>(Questions)</h6>
             {leftPairs.map((left, i) => {
@@ -71,8 +93,16 @@ function Matching({ question, setData, data }) {
                 >
                   {left}
                   {matched && (
-                    <span className="match-indicator">
-                      ✅ Matched with:
+                    <span
+                      className={`match-indicator ${
+                        isCorrectMatch(matched.left, matched.right)
+                          ? "correct"
+                          : "incorrect"
+                      }`}
+                    >
+                      {isCorrectMatch(matched.left, matched.right)
+                        ? "✅ Correct:"
+                        : "❌ Incorrect:"}{" "}
                       {sliceString(matched.right)}
                     </span>
                   )}
@@ -83,7 +113,6 @@ function Matching({ question, setData, data }) {
 
           <div className="vertical-line" />
 
-          {/* Answers Column */}
           <ul className="column">
             <h6>(Answers)</h6>
             {rightPairs.map((right, i) => {
@@ -98,8 +127,16 @@ function Matching({ question, setData, data }) {
                 >
                   {right}
                   {matched && (
-                    <span className="match-indicator">
-                      ✅ Matched with:
+                    <span
+                      className={`match-indicator ${
+                        isCorrectMatch(matched.left, matched.right)
+                          ? "correct"
+                          : "incorrect"
+                      }`}
+                    >
+                      {isCorrectMatch(matched.left, matched.right)
+                        ? "✅ Correct:"
+                        : "❌ Incorrect:"}{" "}
                       {sliceString(matched.left)}
                     </span>
                   )}
