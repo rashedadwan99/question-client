@@ -113,7 +113,7 @@ function Matching({ question, setData, data }) {
 
           <div className="vertical-line" />
 
-          <ul className="column">
+          <ul className="column mt-3">
             <h6>(Answers)</h6>
             {rightPairs.map((right, i) => {
               const matched = findMatchFor("right", right);
