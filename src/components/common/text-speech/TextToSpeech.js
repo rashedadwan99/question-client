@@ -1,74 +1,18 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { useAudioContext } from "../../../context/AudioContext";
 import { QuestionContext } from "../../../context/QuestionProvider";
 
 const TextToSpeech = ({ htmlString, src }) => {
   const { questionIndex } = useContext(QuestionContext);
-  const { isBackgroundAudioPlaying } = useAudioContext();
-
   const isMuted = questionIndex === 0;
 
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [voicesLoaded, setVoicesLoaded] = useState(false);
-  const [availableVoices, setAvailableVoices] = useState([]);
+  const [isActive, setIsActive] = useState(false); // يتحكم بظهور الشخصية
   const prevIndex = useRef(null);
   const gifRef = useRef(null);
+  const audioRef = useRef(null); // لحفظ الصوت الحالي
 
   useEffect(() => {
-    const handleVoicesChanged = () => {
-      const voices = window.speechSynthesis.getVoices();
-      setAvailableVoices(voices);
-      console.log("✅ Available Voices:", voices);
-      if (voices.length > 0) {
-        setVoicesLoaded(true);
-      }
-    };
-
-    if (typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
-      handleVoicesChanged();
-    }
-  }, []);
-
-  const speak = (text) => {
-    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US";
-    utterance.rate = 1;
-
-    // ✅ اختار صوت ذكر إن وجد
-    const maleVoice =
-      availableVoices.find((voice) =>
-        /male|david|alex|fred|english/i.test(voice.name)
-      ) || availableVoices[0];
-
-    if (maleVoice) {
-      utterance.voice = maleVoice;
-      console.log("🗣️ Using Voice:", maleVoice.name);
-    }
-
-    utterance.onstart = () => {
-      setIsSpeaking(true);
-      if (gifRef.current) gifRef.current.style.animationPlayState = "running";
-    };
-
-    const stopGif = () => {
-      setIsSpeaking(false);
-      if (gifRef.current) gifRef.current.style.animationPlayState = "paused";
-    };
-
-    utterance.onend = stopGif;
-    utterance.onerror = stopGif;
-
-    window.speechSynthesis.cancel();
-    setTimeout(() => {
-      window.speechSynthesis.speak(utterance);
-    }, 100);
-  };
-
-  useEffect(() => {
-    if (!htmlString || !voicesLoaded || isMuted) return;
+    if (!htmlString || isMuted) return;
 
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = htmlString;
@@ -84,13 +28,83 @@ const TextToSpeech = ({ htmlString, src }) => {
       }
     });
 
-    const plainText = tempDiv.innerText;
-    if (plainText.trim()) {
-      setIsSpeaking(false);
-      speak(plainText);
+    const plainText = tempDiv.innerText.trim();
+
+    if (plainText) {
+      const fetchAudioFromElevenLabs = async () => {
+        try {
+          // أوقف الصوت السابق فوراً إذا تغيّر السؤال
+          if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.src = "";
+            audioRef.current = null;
+          }
+          setIsSpeaking(false);
+          setIsActive(false);
+
+          const response = await fetch(
+            "https://api.elevenlabs.io/v1/text-to-speech/N2lVS1w4EtoT3dr4eOWO",
+            {
+              method: "POST",
+              headers: {
+                "xi-api-key":
+                  "sk_45751261eae91d927159aa6461b965625d155c25b7e023f0",
+                "Content-Type": "application/json",
+                Accept: "audio/mpeg",
+              },
+              body: JSON.stringify({
+                text: plainText,
+                model_id: "eleven_monolingual_v1",
+                voice_settings: {
+                  stability: 0.4,
+                  similarity_boost: 0.8,
+                },
+              }),
+            }
+          );
+
+          if (!response.ok) throw new Error("فشل في تحميل الصوت");
+
+          const blob = await response.blob();
+          const audioURL = URL.createObjectURL(blob);
+          const audio = new Audio(audioURL);
+          audioRef.current = audio;
+
+          // ✅ عند بدء التشغيل
+          audio.play();
+          setIsSpeaking(true);
+          setIsActive(true); // ✅ عرض الشخصية عند بدء الصوت
+
+          if (gifRef.current)
+            gifRef.current.style.animationPlayState = "running";
+
+          audio.onended = () => {
+            setIsSpeaking(false);
+            setIsActive(false); // ✅ إخفاء الشخصية بعد انتهاء الصوت
+            if (gifRef.current)
+              gifRef.current.style.animationPlayState = "paused";
+          };
+        } catch (error) {
+          console.error("خطأ في تشغيل الصوت:", error);
+          setIsActive(false); // في حال الخطأ خفِ الشخصية
+        }
+      };
+
+      fetchAudioFromElevenLabs();
       prevIndex.current = questionIndex;
     }
-  }, [htmlString, questionIndex, voicesLoaded, isMuted]);
+
+    // Cleanup on question change
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
+      setIsSpeaking(false);
+      setIsActive(false);
+    };
+  }, [htmlString, questionIndex, isMuted]);
 
   if (questionIndex === 0) return null;
 
@@ -98,9 +112,8 @@ const TextToSpeech = ({ htmlString, src }) => {
     <div
       style={{
         ...styles.container,
-        transform: isSpeaking ? "translateY(0)" : "translateY(150%)",
-        width: "initial",
-        opacity: isSpeaking ? 1 : 0,
+        transform: isActive ? "translateY(0)" : "translateY(150%)",
+        opacity: isActive ? 1 : 0,
         transition: "all 0.5s ease-out",
         pointerEvents: "none",
       }}
@@ -113,7 +126,7 @@ const TextToSpeech = ({ htmlString, src }) => {
         style={{
           ...styles.gif,
           animation: "playGif 2s ease-in-out infinite",
-          animationPlayState: "paused",
+          animationPlayState: isSpeaking ? "running" : "paused",
         }}
         alt="Speaking animation"
       />
@@ -124,11 +137,11 @@ const TextToSpeech = ({ htmlString, src }) => {
 const styles = {
   container: {
     position: "fixed",
-    right: "-50px",
+    right: "0",
     bottom: "0",
     zIndex: 1000,
     display: "flex",
-    justifyContent: "center",
+    justifyContent: "end",
     backgroundColor: "transparent",
   },
   gif: {

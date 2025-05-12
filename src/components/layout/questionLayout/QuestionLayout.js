@@ -83,10 +83,10 @@ function QuestionLayout() {
   };
 
   const QuestionComponent = currentQuestion?.component;
+  const condition = isHomePage
+    ? questionIndex % 2 === 0
+    : questionIndex % 2 === 1;
   const lipsync = useMemo(() => {
-    const condition = isHomePage
-      ? questionIndex % 2 === 0
-      : questionIndex % 2 === 1;
     if (condition) {
       return mount;
     } else {
