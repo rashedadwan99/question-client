@@ -1,24 +1,27 @@
 import { useEffect, useRef } from "react";
 import horror from "../../../assets/audio/horror.mp3";
 import { useAudioContext } from "../../../context/AudioContext";
-import { useQuestionContext } from "../../../context/QuestionProvider";
 
 const BackgroundAudio = () => {
   const audioRef = useRef(null);
   const { setIsBackgroundAudioPlaying } = useAudioContext();
-  const { questionIndex } = useQuestionContext();
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
 
+  useEffect(() => {
+    // ✅ أنشئ كائن الصوت
+    const audio = new Audio(horror);
+    audio.loop = true;
+    audio.volume = 1;
+    audioRef.current = audio;
+
+    // ✅ محاولة التشغيل عند أول تفاعل من المستخدم
     const playAudio = () => {
-      audio.volume = 1;
-      audio.loop = true;
       audio
         .play()
-        .then(() => setIsBackgroundAudioPlaying(true))
+        .then(() => {
+          setIsBackgroundAudioPlaying(true);
+        })
         .catch((err) => {
-          console.warn("Audio play blocked. User interaction required.");
+          console.warn("Background audio play was blocked:", err);
         });
     };
 
@@ -27,11 +30,12 @@ const BackgroundAudio = () => {
     return () => {
       document.removeEventListener("click", playAudio);
       audio.pause();
+      audioRef.current = null;
       setIsBackgroundAudioPlaying(false);
     };
   }, []);
 
-  return <audio ref={audioRef} src={horror} />;
+  return null; // ✅ لا حاجة لعنصر <audio /> في JSX
 };
 
 export default BackgroundAudio;

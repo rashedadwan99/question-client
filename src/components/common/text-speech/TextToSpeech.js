@@ -6,21 +6,88 @@ const TextToSpeech = ({ htmlString, src }) => {
   const isMuted = questionIndex === 0;
 
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isActive, setIsActive] = useState(false); // يتحكم بظهور الشخصية
+  const [isActive, setIsActive] = useState(false);
   const prevIndex = useRef(null);
   const gifRef = useRef(null);
-  const audioRef = useRef(null); // لحفظ الصوت الحالي
+  const voiceRef = useRef(null);
+
+  // جلب أفضل صوت رجل خشن (أو صوت أكثر عمقًا)
+  const loadVoice = () => {
+    const synth = window.speechSynthesis;
+    const voices = synth.getVoices();
+
+    // حاول العثور على صوت أكثر خشونة (نبحث عن كلمات مثل "George" أو أصوات معينة تكون خشنة)
+    const roughMaleVoice =
+      voices.find(
+        (v) =>
+          v.name.toLowerCase().includes("george") && v.lang.startsWith("en")
+      ) ||
+      voices.find(
+        (v) =>
+          v.name.toLowerCase().includes("english") && v.lang.startsWith("en")
+      ) ||
+      voices.find(
+        (v) => v.name.toLowerCase().includes("male") && v.lang.startsWith("en")
+      ) ||
+      voices.find((v) => v.lang === "en-US"); // اختيار الصوت الأنسب حسب المتاح
+
+    if (roughMaleVoice) {
+      voiceRef.current = roughMaleVoice;
+    } else {
+      console.warn("لم يتم العثور على صوت رجل خشن مناسب.");
+    }
+  };
 
   useEffect(() => {
-    if (!htmlString || isMuted) return;
+    if (!window.speechSynthesis) return;
+
+    // بعض المتصفحات تحتاج إلى انتظار الأصوات
+    if (window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = loadVoice;
+    } else {
+      loadVoice();
+    }
+  }, []);
+
+  const speak = (text) => {
+    const synth = window.speechSynthesis;
+    if (!synth || !voiceRef.current) return;
+
+    synth.cancel(); // إلغاء أي كلام حالي قبل البدء
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = voiceRef.current;
+    utterance.lang = voiceRef.current.lang || "en-US";
+
+    // عندما يبدأ الكلام
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      setIsActive(true);
+      if (gifRef.current) gifRef.current.style.animationPlayState = "running";
+    };
+
+    // عندما ينتهي الكلام
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setIsActive(false);
+      if (gifRef.current) gifRef.current.style.animationPlayState = "paused";
+    };
+
+    synth.speak(utterance);
+  };
+
+  useEffect(() => {
+    if (!htmlString || isMuted || !voiceRef.current) return;
 
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = htmlString;
 
+    // إزالة بعض العناصر غير المرغوب فيها مثل iframe و script
     tempDiv
       .querySelectorAll("script, style, noscript, iframe")
       .forEach((el) => el.remove());
 
+    // إزالة العناصر المخفية
     tempDiv.querySelectorAll("*").forEach((el) => {
       const style = window.getComputedStyle(el);
       if (style.display === "none" || style.visibility === "hidden") {
@@ -30,82 +97,19 @@ const TextToSpeech = ({ htmlString, src }) => {
 
     const plainText = tempDiv.innerText.trim();
 
-    if (plainText) {
-      const fetchAudioFromElevenLabs = async () => {
-        try {
-          // أوقف الصوت السابق فوراً إذا تغيّر السؤال
-          if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.src = "";
-            audioRef.current = null;
-          }
-          setIsSpeaking(false);
-          setIsActive(false);
-
-          const response = await fetch(
-            "https://api.elevenlabs.io/v1/text-to-speech/N2lVS1w4EtoT3dr4eOWO",
-            {
-              method: "POST",
-              headers: {
-                "xi-api-key":
-                  "sk_45751261eae91d927159aa6461b965625d155c25b7e023f0",
-                "Content-Type": "application/json",
-                Accept: "audio/mpeg",
-              },
-              body: JSON.stringify({
-                text: plainText,
-                model_id: "eleven_monolingual_v1",
-                voice_settings: {
-                  stability: 0.4,
-                  similarity_boost: 0.8,
-                },
-              }),
-            }
-          );
-
-          if (!response.ok) throw new Error("فشل في تحميل الصوت");
-
-          const blob = await response.blob();
-          const audioURL = URL.createObjectURL(blob);
-          const audio = new Audio(audioURL);
-          audioRef.current = audio;
-
-          // ✅ عند بدء التشغيل
-          audio.play();
-          setIsSpeaking(true);
-          setIsActive(true); // ✅ عرض الشخصية عند بدء الصوت
-
-          if (gifRef.current)
-            gifRef.current.style.animationPlayState = "running";
-
-          audio.onended = () => {
-            setIsSpeaking(false);
-            setIsActive(false); // ✅ إخفاء الشخصية بعد انتهاء الصوت
-            if (gifRef.current)
-              gifRef.current.style.animationPlayState = "paused";
-          };
-        } catch (error) {
-          console.error("خطأ في تشغيل الصوت:", error);
-          setIsActive(false); // في حال الخطأ خفِ الشخصية
-        }
-      };
-
-      fetchAudioFromElevenLabs();
+    if (plainText && questionIndex !== prevIndex.current) {
+      speak(plainText); // التحدث بالنص
       prevIndex.current = questionIndex;
     }
 
-    // Cleanup on question change
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = "";
-        audioRef.current = null;
-      }
+      window.speechSynthesis.cancel(); // إلغاء أي كلام مستمر
       setIsSpeaking(false);
       setIsActive(false);
     };
   }, [htmlString, questionIndex, isMuted]);
 
+  // عدم عرض المكون إذا كانت الإجابة هي 0 (فيما يتعلق بالصوت)
   if (questionIndex === 0) return null;
 
   return (

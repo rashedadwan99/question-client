@@ -6,6 +6,7 @@ import Matching from "../components/questions/matchingQuestions/Matching";
 import Filling from "../components/questions/fillingQuestions/Filling";
 import FirstForm from "../components/questions/first-form/FirstForm";
 import { routes } from "../routes/routes";
+import { AudioCacheProvider } from "./AudioCacheContext";
 
 export const QuestionContext = createContext();
 
@@ -89,6 +90,9 @@ export const QuestionProvider = ({ children }) => {
         isLoading,
       }}
     >
+      {/* <AudioCacheProvider>
+        </AudioCacheProvider> */}
+
       {children}
     </QuestionContext.Provider>
   );
