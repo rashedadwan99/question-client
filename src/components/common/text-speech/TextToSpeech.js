@@ -10,12 +10,15 @@ const TextToSpeech = ({ htmlString, src }) => {
 
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voicesLoaded, setVoicesLoaded] = useState(false);
+  const [availableVoices, setAvailableVoices] = useState([]);
   const prevIndex = useRef(null);
   const gifRef = useRef(null);
 
   useEffect(() => {
     const handleVoicesChanged = () => {
       const voices = window.speechSynthesis.getVoices();
+      setAvailableVoices(voices);
+      console.log("✅ Available Voices:", voices);
       if (voices.length > 0) {
         setVoicesLoaded(true);
       }
@@ -28,17 +31,22 @@ const TextToSpeech = ({ htmlString, src }) => {
   }, []);
 
   const speak = (text) => {
-    // if (
-    //   (isBackgroundAudioPlaying && questionIndex !== 0) ||
-    //   questionIndex === 0 // 🔐 block if question index is 0
-    // )
-    //   return;
-
     if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "en-US";
     utterance.rate = 1;
+
+    // ✅ اختار صوت ذكر إن وجد
+    const maleVoice =
+      availableVoices.find((voice) =>
+        /male|david|alex|fred|english/i.test(voice.name)
+      ) || availableVoices[0];
+
+    if (maleVoice) {
+      utterance.voice = maleVoice;
+      console.log("🗣️ Using Voice:", maleVoice.name);
+    }
 
     utterance.onstart = () => {
       setIsSpeaking(true);
@@ -60,7 +68,7 @@ const TextToSpeech = ({ htmlString, src }) => {
   };
 
   useEffect(() => {
-    if (!htmlString || !voicesLoaded) return;
+    if (!htmlString || !voicesLoaded || isMuted) return;
 
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = htmlString;
