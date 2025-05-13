@@ -7,6 +7,7 @@ const TextToSpeech = ({ htmlString, src }) => {
 
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false); // لتتبع ما إذا كانت الصورة قد تم تحميلها
   const prevIndex = useRef(null);
   const gifRef = useRef(null);
   const voiceRef = useRef(null);
@@ -36,6 +37,11 @@ const TextToSpeech = ({ htmlString, src }) => {
     } else {
       console.warn("لم يتم العثور على صوت رجل خشن مناسب.");
     }
+  };
+
+  // التحقق من تحميل الصورة
+  const handleImageLoad = () => {
+    setIsImageLoaded(true); // تأكيد أن الصورة تم تحميلها
   };
 
   useEffect(() => {
@@ -77,7 +83,7 @@ const TextToSpeech = ({ htmlString, src }) => {
   };
 
   useEffect(() => {
-    if (!htmlString || isMuted || !voiceRef.current) return;
+    if (!htmlString || isMuted || !voiceRef.current || !isImageLoaded) return;
 
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = htmlString;
@@ -107,7 +113,7 @@ const TextToSpeech = ({ htmlString, src }) => {
       setIsSpeaking(false);
       setIsActive(false);
     };
-  }, [htmlString, questionIndex, isMuted]);
+  }, [htmlString, questionIndex, isMuted, isImageLoaded]);
 
   // عدم عرض المكون إذا كانت الإجابة هي 0 (فيما يتعلق بالصوت)
   if (questionIndex === 0) return null;
@@ -125,6 +131,7 @@ const TextToSpeech = ({ htmlString, src }) => {
       <img
         ref={gifRef}
         src={src}
+        loading="lazy"
         width="200"
         height="200"
         style={{
@@ -133,6 +140,7 @@ const TextToSpeech = ({ htmlString, src }) => {
           animationPlayState: isSpeaking ? "running" : "paused",
         }}
         alt="Speaking animation"
+        onLoad={handleImageLoad} // عند تحميل الصورة
       />
     </div>
   );
